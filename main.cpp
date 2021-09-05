@@ -1,9 +1,10 @@
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 using namespace sf;
+using namespace std;
 
 #define size 54
-Sprite pieces[32];
 
 int board[8][8] = {
     {-5, -4, -3, -2, -1, -3, -4, -5},
@@ -16,22 +17,54 @@ int board[8][8] = {
     { 5,  4,  3,  2,  1,  3,  4,  5},
 };
 
+Sprite pieces[8][8];
+
+void printBoard(){
+    for(int i = 0; i < 8; i++){
+        for(int j = 0; j < 8; j++){
+            cout << board[i][j];
+        }
+        cout << endl;
+    }
+}
+
 void loadPieces(){
-    int k = 0;
     int imgSize = 200;
-    for(int j = 0; j < 8; j++){
-        for(int i = 0; i < 8; i++){
+    for(int i = 0; i < 8; i++){
+        for(int j = 0; j < 8; j++){
             int piece = board[i][j];
             if (!piece) continue;
 
             int x = abs(piece) -1;
             int y = piece > 0 ? 0 : 1;
 
-            pieces[k].setTextureRect( IntRect(imgSize*x, imgSize*y, imgSize, imgSize));
-            pieces[k].setPosition(size*j, size*i);
-            k++;
+            pieces[i][j].setTextureRect( IntRect(imgSize*x, imgSize*y, imgSize, imgSize));
+            pieces[i][j].setPosition(size*j, size*i);
         }
     }
+}
+
+bool checkPieceCanMove(int pieceSquare[], int toSquare[], bool whiteTurn){
+    bool canMove = false;
+    switch(abs(board[pieceSquare[1]][pieceSquare[0]])){
+        case 1:
+            if(pieceSquare[1] - 1 == toSquare[1] || pieceSquare[1] + 1 == toSquare[1] || pieceSquare[0] - 1 == toSquare[0] || pieceSquare[0] + 1 == toSquare[0]) 
+            if(board[toSquare[1]][toSquare[0]] == 0 || (board[toSquare[1]][toSquare[0]] < 0 && whiteTurn) || (board[toSquare[1]][toSquare[0]] > 0 && !whiteTurn)) canMove = true;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        case 5:
+            break;
+        case 6:
+            if(pieceSquare[1] - 1 == toSquare[1]) cout << "FAY" << endl;
+            break;
+    default:
+        break;
+    }
+    return canMove;
 }
 
 int main(){
@@ -40,15 +73,22 @@ int main(){
     Texture figures;
     figures.loadFromFile("img/pieces.png");
 
-    bool whiteTurn = false;
-    float dx=0, dy=0;
-    int pieceIndex = 0;
+    Sprite figuresSprite(figures), noneSprite;
+    figuresSprite.setScale(Vector2f(0.27, 0.27));
 
-    for (int i = 0; i < 32; i++) {
-        pieces[i].setTexture(figures);
-        pieces[i].setScale(Vector2f(0.27, 0.27));
-    }
+    bool move = false;
+    bool whiteTurn = true;
+    bool blackTurn = false;
 
+    int pieceSquare[2];
+    Vector2f prevPosition;
+
+    for (int i = 0; i < 8; i++){
+        for (int j = 0; j < 8; j++){
+            if(!board[i][j]) continue;
+            pieces[i][j] = figuresSprite;
+        } 
+    } 
     loadPieces();
     
     while (window.isOpen()){
@@ -62,12 +102,13 @@ int main(){
 
             if (event.type == Event::MouseButtonPressed){
                 if (event.key.code == Mouse::Left){
-                    for (int k = 0; k < 32; k++){
-                        if (pieces[k].getGlobalBounds().contains(mousePosition.x, mousePosition.y)){
-                            whiteTurn = true;
-                            pieceIndex = k;
-                            dx = mousePosition.x - pieces[k].getPosition().x;
-                            dy = mousePosition.y - pieces[k].getPosition().y;
+                    for (int i = 0; i < 8; i++){
+                        for (int j = 0; j < 8; j++){
+                            if (pieces[j][i].getGlobalBounds().contains(mousePosition.x, mousePosition.y)){
+                                move = true;
+                                pieceSquare[0] = i;
+                                pieceSquare[1] = j;
+                            }
                         }
                     }
                 }
@@ -75,13 +116,46 @@ int main(){
 
             if (event.type == Event::MouseButtonReleased){
                 if (event.key.code == Mouse::Left){
-                    whiteTurn = false;
+                    move = false;
+                    for(int i = 0; i < 8; i++){
+                        for(int j = 0; j < 8; j++){
+                            if (size*i <= mousePosition.x && (1 + i)*size >= mousePosition.x &&
+                            size*j <= mousePosition.y && (1 + j)*size >= mousePosition.y){
+
+                                if((board[pieceSquare[1]][pieceSquare[0]] > 0 && whiteTurn) || (board[pieceSquare[1]][pieceSquare[0]] < 0 && blackTurn)){
+                                    int square[2] = {j, i};
+                                    if(checkPieceCanMove(pieceSquare, square, whiteTurn)){
+                                        pieces[j][i] = pieces[pieceSquare[1]][pieceSquare[0]];
+                                        pieces[j][i].setPosition(size*i, size*j);
+
+                                        pieces[pieceSquare[1]][pieceSquare[0]] = noneSprite;
+                                        
+                                        board[j][i] = board[pieceSquare[1]][pieceSquare[0]];
+                                        board[pieceSquare[1]][pieceSquare[0]] = 0;
+
+                                        if(blackTurn){
+                                            whiteTurn = true;
+                                            blackTurn = false;
+                                        }else if(whiteTurn){
+                                            whiteTurn = false;
+                                            blackTurn = true;
+                                        }
+                                    }else{
+                                        pieces[pieceSquare[1]][pieceSquare[0]].setPosition(pieceSquare[0]*size, pieceSquare[1]*size);
+                                    }
+                                }else{
+                                    pieces[pieceSquare[1]][pieceSquare[0]].setPosition(pieceSquare[0]*size, pieceSquare[1]*size);
+                                }
+                                printBoard();
+                            }
+                        }
+                    }
                 }
             }
         }
         
-        if (whiteTurn){
-            pieces[pieceIndex].setPosition(mousePosition.x-dx, mousePosition.y-dy);
+        if (move){
+            pieces[pieceSquare[1]][pieceSquare[0]].setPosition(mousePosition.x-27, mousePosition.y-27);
         }
 
         window.clear();
@@ -100,7 +174,7 @@ int main(){
             }
         }
 
-        for (int i = 0; i < 32; i++) window.draw(pieces[i]);
+        for (int i = 0; i < 8; i++) for (int j = 0; j < 8; j++) window.draw(pieces[i][j]);
 
         window.display();
     }
