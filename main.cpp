@@ -45,7 +45,7 @@ void loadPieces(){
 }
 
 bool checkPieceCanMove(int pieceSquare[], int toSquare[], bool whiteTurn){
-    bool canMove = false;
+    bool canMove = false; 
     switch(abs(board[pieceSquare[1]][pieceSquare[0]])){
         case 1:
             if(pieceSquare[1] - 1 == toSquare[1] || pieceSquare[1] + 1 == toSquare[1] || pieceSquare[0] - 1 == toSquare[0] || pieceSquare[0] + 1 == toSquare[0]) 
@@ -55,11 +55,18 @@ bool checkPieceCanMove(int pieceSquare[], int toSquare[], bool whiteTurn){
         case 3:
             break;
         case 4:
-            break;
+            if((pieceSquare[1] - 2 == toSquare[1] && (pieceSquare[0] + 1 == toSquare[0] || pieceSquare[0] - 1 == toSquare[0])) || 
+                (pieceSquare[1] + 2 == toSquare[1] && (pieceSquare[0] + 1 == toSquare[0] || pieceSquare[0] - 1 == toSquare[0])) ||
+                (pieceSquare[0] - 2 == toSquare[0] && (pieceSquare[1] + 1 == toSquare[1] || pieceSquare[1] - 1 == toSquare[1])) ||
+                (pieceSquare[0] + 2 == toSquare[0] && (pieceSquare[1] + 1 == toSquare[1] || pieceSquare[1] - 1 == toSquare[1]))) 
+            if(board[toSquare[1]][toSquare[0]] == 0 || (board[toSquare[1]][toSquare[0]] < 0 && whiteTurn) || (board[toSquare[1]][toSquare[0]] > 0 && !whiteTurn)) canMove = true;
         case 5:
             break;
         case 6:
-            if(pieceSquare[1] - 1 == toSquare[1]) cout << "FAY" << endl;
+            if(whiteTurn) if((((pieceSquare[1] - 1 == toSquare[1] && pieceSquare[0] == toSquare[0]) || (pieceSquare[1] - 2 == toSquare[1] && pieceSquare[0] == toSquare[0] && pieceSquare[1] == 6)) && board[toSquare[1]][toSquare[0]] == 0) || 
+            (((pieceSquare[0] - 1 == toSquare[0] && pieceSquare[1] - 1 == toSquare[1]) || (pieceSquare[0] + 1 == toSquare[0] && pieceSquare[1] - 1 == toSquare[1])) && board[toSquare[1]][toSquare[0]] < 0)) canMove = true;
+            if(!whiteTurn) if((((pieceSquare[1] + 1 == toSquare[1] && pieceSquare[0] == toSquare[0]) || (pieceSquare[1] + 2 == toSquare[1] && pieceSquare[0] == toSquare[0] && pieceSquare[1] == 1)) && board[toSquare[1]][toSquare[0]] == 0) || 
+            (((pieceSquare[0] - 1 == toSquare[0] && pieceSquare[1] + 1 == toSquare[1]) || (pieceSquare[0] + 1 == toSquare[0] && pieceSquare[1] + 1 == toSquare[1])) && board[toSquare[1]][toSquare[0]] > 0)) canMove = true;
             break;
     default:
         break;
@@ -122,9 +129,10 @@ int main(){
                             if (size*i <= mousePosition.x && (1 + i)*size >= mousePosition.x &&
                             size*j <= mousePosition.y && (1 + j)*size >= mousePosition.y){
 
-                                if((board[pieceSquare[1]][pieceSquare[0]] > 0 && whiteTurn) || (board[pieceSquare[1]][pieceSquare[0]] < 0 && blackTurn)){
-                                    int square[2] = {j, i};
+                                if((board[pieceSquare[1]][pieceSquare[0]] > 0 && whiteTurn) || (board[pieceSquare[1]][pieceSquare[0]] < 0 && !whiteTurn)){
+                                    int square[2] = {i, j};
                                     if(checkPieceCanMove(pieceSquare, square, whiteTurn)){
+                                        cout << "Gay" << endl;
                                         pieces[j][i] = pieces[pieceSquare[1]][pieceSquare[0]];
                                         pieces[j][i].setPosition(size*i, size*j);
 
@@ -133,12 +141,10 @@ int main(){
                                         board[j][i] = board[pieceSquare[1]][pieceSquare[0]];
                                         board[pieceSquare[1]][pieceSquare[0]] = 0;
 
-                                        if(blackTurn){
+                                        if(!whiteTurn){
                                             whiteTurn = true;
-                                            blackTurn = false;
-                                        }else if(whiteTurn){
+                                        }else{
                                             whiteTurn = false;
-                                            blackTurn = true;
                                         }
                                     }else{
                                         pieces[pieceSquare[1]][pieceSquare[0]].setPosition(pieceSquare[0]*size, pieceSquare[1]*size);
