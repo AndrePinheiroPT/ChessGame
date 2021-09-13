@@ -46,13 +46,84 @@ void loadPieces(){
 
 bool checkPieceCanMove(int pieceSquare[], int toSquare[], bool whiteTurn){
     bool canMove = false; 
+    int dy;
     switch(abs(board[pieceSquare[1]][pieceSquare[0]])){
         case 1:
             if(pieceSquare[1] - 1 == toSquare[1] || pieceSquare[1] + 1 == toSquare[1] || pieceSquare[0] - 1 == toSquare[0] || pieceSquare[0] + 1 == toSquare[0]) 
             if(board[toSquare[1]][toSquare[0]] == 0 || (board[toSquare[1]][toSquare[0]] < 0 && whiteTurn) || (board[toSquare[1]][toSquare[0]] > 0 && !whiteTurn)) canMove = true;
         case 2:
+            for(int x = pieceSquare[0] - 1; x >= 0; x--){
+                if((board[pieceSquare[1]][x] < 0 && !whiteTurn) || (board[pieceSquare[1]][x] > 0 && whiteTurn)) break;
+                if(toSquare[0] == x && toSquare[1] == pieceSquare[1]) canMove = true;
+            }
+            for(int x = pieceSquare[0] + 1; x <= 7; x++){
+                if((board[pieceSquare[1]][x] < 0 && !whiteTurn) || (board[pieceSquare[1]][x] > 0 && whiteTurn)) break;
+                if(toSquare[0] == x && toSquare[1] == pieceSquare[1]) canMove = true;
+            }
+            for(int y = pieceSquare[1] - 1; y >= 0; y--){
+                if((board[y][pieceSquare[0]] < 0 && !whiteTurn) || (board[y][pieceSquare[0]] > 0 && whiteTurn)) break;
+                if(toSquare[1] == y && toSquare[0] == pieceSquare[0]) canMove = true;
+            }
+            for(int y = pieceSquare[1] + 1; y <= 7; y++){
+                if((board[y][pieceSquare[0]] < 0 && !whiteTurn) || (board[y][pieceSquare[0]] > 0 && whiteTurn)) break;
+                if(toSquare[1] == y && toSquare[0] == pieceSquare[0]) canMove = true;
+            }
+            dy = -1;
+            for(int x = pieceSquare[0] - 1; x >= 0; x--){
+                if((board[pieceSquare[1] + dy][x] < 0  && !whiteTurn) || (board[pieceSquare[1] + dy][x] > 0 && whiteTurn)) break;
+                if(toSquare[0] == x && toSquare[1] == pieceSquare[1] + dy) canMove = true;
+                dy--;
+            }
+
+            dy = -1;
+            for(int x = pieceSquare[0] - 1; x >= 0; x--){
+                if((board[pieceSquare[1] - dy][x] < 0  && !whiteTurn) || (board[pieceSquare[1] - dy][x] > 0 && whiteTurn)) break;
+                if(toSquare[0] == x && toSquare[1] == pieceSquare[1] - dy) canMove = true;
+                dy--;
+            }
+
+            dy = -1;
+            for(int x = pieceSquare[0] + 1; x <= 7; x++){
+                if((board[pieceSquare[1] + dy][x] < 0  && !whiteTurn) || (board[pieceSquare[1] + dy][x] > 0 && whiteTurn)) break;
+                if(toSquare[0] == x && toSquare[1] == pieceSquare[1] + dy) canMove = true;
+                dy--;
+            }
+
+            dy = -1;
+            for(int x = pieceSquare[0] + 1; x <= 7; x++){
+                if((board[pieceSquare[1] - dy][x] < 0  && !whiteTurn) || (board[pieceSquare[1] - dy][x] > 0 && whiteTurn)) break;
+                if(toSquare[0] == x && toSquare[1] == pieceSquare[1] - dy) canMove = true;
+                dy--;
+            }
             break;
         case 3:
+            dy = -1;
+            for(int x = pieceSquare[0] - 1; x >= 0; x--){
+                if((board[pieceSquare[1] + dy][x] < 0  && !whiteTurn) || (board[pieceSquare[1] + dy][x] > 0 && whiteTurn)) break;
+                if(toSquare[0] == x && toSquare[1] == pieceSquare[1] + dy) canMove = true;
+                dy--;
+            }
+
+            dy = -1;
+            for(int x = pieceSquare[0] - 1; x >= 0; x--){
+                if((board[pieceSquare[1] - dy][x] < 0  && !whiteTurn) || (board[pieceSquare[1] - dy][x] > 0 && whiteTurn)) break;
+                if(toSquare[0] == x && toSquare[1] == pieceSquare[1] - dy) canMove = true;
+                dy--;
+            }
+
+            dy = -1;
+            for(int x = pieceSquare[0] + 1; x <= 7; x++){
+                if((board[pieceSquare[1] + dy][x] < 0  && !whiteTurn) || (board[pieceSquare[1] + dy][x] > 0 && whiteTurn)) break;
+                if(toSquare[0] == x && toSquare[1] == pieceSquare[1] + dy) canMove = true;
+                dy--;
+            }
+
+            dy = -1;
+            for(int x = pieceSquare[0] + 1; x <= 7; x++){
+                if((board[pieceSquare[1] - dy][x] < 0  && !whiteTurn) || (board[pieceSquare[1] - dy][x] > 0 && whiteTurn)) break;
+                if(toSquare[0] == x && toSquare[1] == pieceSquare[1] - dy) canMove = true;
+                dy--;
+            }
             break;
         case 4:
             if((pieceSquare[1] - 2 == toSquare[1] && (pieceSquare[0] + 1 == toSquare[0] || pieceSquare[0] - 1 == toSquare[0])) || 
@@ -61,6 +132,22 @@ bool checkPieceCanMove(int pieceSquare[], int toSquare[], bool whiteTurn){
                 (pieceSquare[0] + 2 == toSquare[0] && (pieceSquare[1] + 1 == toSquare[1] || pieceSquare[1] - 1 == toSquare[1]))) 
             if(board[toSquare[1]][toSquare[0]] == 0 || (board[toSquare[1]][toSquare[0]] < 0 && whiteTurn) || (board[toSquare[1]][toSquare[0]] > 0 && !whiteTurn)) canMove = true;
         case 5:
+            for(int x = pieceSquare[0] - 1; x >= 0; x--){
+                if((board[pieceSquare[1]][x] < 0 && !whiteTurn) || (board[pieceSquare[1]][x] > 0 && whiteTurn)) break;
+                if(toSquare[0] == x && toSquare[1] == pieceSquare[1]) canMove = true;
+            }
+            for(int x = pieceSquare[0] + 1; x <= 7; x++){
+                if((board[pieceSquare[1]][x] < 0 && !whiteTurn) || (board[pieceSquare[1]][x] > 0 && whiteTurn)) break;
+                if(toSquare[0] == x && toSquare[1] == pieceSquare[1]) canMove = true;
+            }
+            for(int y = pieceSquare[1] - 1; y >= 0; y--){
+                if((board[y][pieceSquare[0]] < 0 && !whiteTurn) || (board[y][pieceSquare[0]] > 0 && whiteTurn)) break;
+                if(toSquare[1] == y && toSquare[0] == pieceSquare[0]) canMove = true;
+            }
+            for(int y = pieceSquare[1] + 1; y <= 7; y++){
+                if((board[y][pieceSquare[0]] < 0 && !whiteTurn) || (board[y][pieceSquare[0]] > 0 && whiteTurn)) break;
+                if(toSquare[1] == y && toSquare[0] == pieceSquare[0]) canMove = true;
+            }
             break;
         case 6:
             if(whiteTurn) if((((pieceSquare[1] - 1 == toSquare[1] && pieceSquare[0] == toSquare[0]) || (pieceSquare[1] - 2 == toSquare[1] && pieceSquare[0] == toSquare[0] && pieceSquare[1] == 6)) && board[toSquare[1]][toSquare[0]] == 0) || 
@@ -68,9 +155,9 @@ bool checkPieceCanMove(int pieceSquare[], int toSquare[], bool whiteTurn){
             if(!whiteTurn) if((((pieceSquare[1] + 1 == toSquare[1] && pieceSquare[0] == toSquare[0]) || (pieceSquare[1] + 2 == toSquare[1] && pieceSquare[0] == toSquare[0] && pieceSquare[1] == 1)) && board[toSquare[1]][toSquare[0]] == 0) || 
             (((pieceSquare[0] - 1 == toSquare[0] && pieceSquare[1] + 1 == toSquare[1]) || (pieceSquare[0] + 1 == toSquare[0] && pieceSquare[1] + 1 == toSquare[1])) && board[toSquare[1]][toSquare[0]] > 0)) canMove = true;
             break;
-    default:
-        break;
-    }
+        default:
+            break;
+        }
     return canMove;
 }
 
